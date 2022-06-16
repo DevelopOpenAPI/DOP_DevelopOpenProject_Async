@@ -8,6 +8,7 @@ app = FastAPI()
 
 response_items = {"status": "", "message": "", "time": ""}
 
+
 class ReceiptBody(BaseModel):
     userid: str
     password: str
@@ -32,6 +33,7 @@ def accept_call(Item: ReceiptItem):
     # ToDo: Implement trigger of proxy execution API
 
     return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content=response_items)
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host='127.0.0.1', port=8080)
