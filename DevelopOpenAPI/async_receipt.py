@@ -20,12 +20,12 @@ class ReceiptItem(BaseModel):
 
 
 @app.get("/")
-def root_response():
+async def root_response():
     return {"What": "are you looking at?"}
 
 
 @app.post("/acceptcall")
-def accept_call(Item: ReceiptItem):
+async def accept_call(Item: ReceiptItem):
     response_items["status"] = "S202"
     response_items["message"] = "ACCEPTED"
     # time = datetime.now().isoformat(timespec="seconds")
