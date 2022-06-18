@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, BackgroundTasks
 from pydantic import BaseModel
 from datetime import datetime
 from fastapi.responses import JSONResponse
@@ -35,17 +35,17 @@ async def root_response():
 
 
 @app.post("/acceptcall")
-async def accept_call(Item: ReceiptItem):
+async def accept_call(Item: ReceiptItem, background_task: BackgroundTasks):
     response_items["status"] = "S202"
     response_items["message"] = "ACCEPTED"
     response_items["time"] = datetime.now().isoformat()
-    # implement type 1: await function
     target_body = AsyncExecute(
         URI=Item.TargetURI,
         RequestBody = Item.TargetJSONBody,
         Method = Item.Method,
     )
-    await execute_targetapi(target_body)
+
+    background_task.add_task(execute_targetapi, target_body)
     return JSONResponse(status_code=status.HTTP_202_ACCEPTED, content=response_items)
 
 
@@ -54,7 +54,7 @@ async def execute_targetapi(asynctarget: AsyncExecute):
     ut = time.time()
     base_url = asynctarget.URI
     requestbody = asynctarget.RequestBody
-    wait_time = 100
+    wait_time = 0.1
 
     if asynctarget.Method == "GET":
         time.sleep(wait_time)
