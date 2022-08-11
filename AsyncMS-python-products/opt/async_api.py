@@ -89,15 +89,38 @@ async def execute_targetapi(asynctarget: AsyncExecute):
             response = requests.delete(base_url, json=requestbody)
             data = json.loads(response.text)
 
-    async_return = {
-        "status": "ok",
-        "message": "Accepted",
-        "RequestURI": base_url,
-        "RequestBody": requestbody,
-        "Method": asynctarget.Method,
-        "timestamp": ut
-    }
-    return async_return
+    # When target API is failed, execute callback API
+    if response is not None:
+        response_code = response.status_code
+        if response.status_code != requests.codes.ok:
+            failed_flag = 1
+        else:
+            failed_flag = 0
+    else:
+        failed_flag = 1
+
+    
+    if failed_flag == 0:
+        response_items["status"] = "S200"
+        response_items["message"] = "SUCCESS"
+        response_items["time"] = datetime.now().isoformat()
+        return JSONResponse(status_code=status.HTTP_200_ACCEPTED, content=response_items)
+    else:
+        response_items["status"] = "S500"
+        response_items["message"] = "INTERNAL_SERVER_ERROR"
+        response_items["time"] = datetime.now().isoformat()
+        return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=response_items)
+
+
+    # async_return = {
+    #     "status": "ok",
+    #     "message": "Accepted",
+    #     "RequestURI": base_url,
+    #     "RequestBody": requestbody,
+    #     "Method": asynctarget.Method,
+    #     "timestamp": ut
+    # }
+    # return async_return
 
 
 if __name__ == "__main__":
