@@ -106,7 +106,7 @@ async def execute_targetapi(asynctarget: AsyncExecute):
         response_items["time"] = datetime.now().isoformat()
         return JSONResponse(status_code=status.HTTP_200_ACCEPTED, content=response_items)
     else:
-        response_items["status"] = "S500"
+        response_items["status"] = "E500"
         response_items["message"] = "INTERNAL_SERVER_ERROR"
         response_items["time"] = datetime.now().isoformat()
         return JSONResponse(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, content=response_items)
